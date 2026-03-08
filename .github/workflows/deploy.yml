@@ -11,74 +11,72 @@ on:
         options:
           - apply
           - destroy
-        
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Check if secret exists
-      run: |
-        if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
-          echo "Secret NOT available"
-        else
-          echo "Secret available"
-        fi
-        
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Check if secret exists
+        run: |
+          if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
+            echo "Secret NOT available"
+          else
+            echo "Secret available"
+          fi
 
-    - name: List accessible Resource Groups
-      run: az group list --output table
-      
-    - name: AZ Destroy: Delete Container App
-      if: ${{ github.event.inputs.action == 'destroy' }}    
-      run: |
-        az containerapp delete \
-          --name frontend-app \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes
-        az containerapp delete \
-          --name backend-app \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes          
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: AZ Destroy: Delete Container App Environment
-      if: ${{ github.event.inputs.action == 'destroy' }}        
-      run: |
-        az containerapp env delete \
-          --name demo-cae \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes \
-          --verbose
+      - name: List accessible Resource Groups
+        run: az group list --output table
 
-    - name: AZ Destroy: Delete Virtual Network
-      if: ${{ github.event.inputs.action == 'destroy' }}        
-      run: |
-        az network vnet delete \
-          --name demo-vnet \
-          --resource-group rg-cicd-terraform-app-logisticaJJR || true
- 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-        
-    - name: Terraform Init
-      run: terraform init
+      - name: AZ Destroy: Delete Container Apps
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          az containerapp delete \
+            --name frontend-app \
+            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --yes
+          az containerapp delete \
+            --name backend-app \
+            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --yes
 
-    - name: Terraform Apply
-      if: ${{ github.event.inputs.action == 'apply' }}
-      run: |
-        terraform apply -auto-approve
-        ls -la
-        
-    - name: Save Terraform state file
-      if: ${{ github.event.inputs.action == 'apply' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: terraform-state
-        path: ./terraform.tfstate
-        
-          
+      - name: AZ Destroy: Delete Container App Environment
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          az containerapp env delete \
+            --name demo-cae \
+            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --yes \
+            --verbose
+
+      - name: AZ Destroy: Delete Virtual Network
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          az network vnet delete \
+            --name demo-vnet \
+            --resource-group rg-cicd-terraform-app-logisticaJJR || true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: |
+          terraform apply -auto-approve
+          ls -la
+
+      - name: Save Terraform state file
+        if: ${{ github.event.inputs.action == 'apply' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-state
+          path: ./terraform.tfstate
