@@ -41,8 +41,7 @@ jobs:
       run: |
         az network vnet delete \
           --name demo-vnet \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes
+          --resource-group rg-cicd-terraform-app-logisticaJJR || true
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
