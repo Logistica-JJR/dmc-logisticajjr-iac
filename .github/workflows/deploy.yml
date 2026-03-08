@@ -4,16 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Choose action: apply or destroy'
+        description: 'Seleccionar: Terraform apply o AZ destroy'
         required: true
         default: 'apply'
         type: choice
         options:
           - apply
           - destroy
-      tfstate_file:
-        description: 'Terraform state file for destroy'
-        required: false
         
 jobs:
   terraform:
@@ -36,36 +33,38 @@ jobs:
 
     - name: List accessible Resource Groups
       run: az group list --output table
- 
-    # - name: Delete Container App
-      # run: |
-        # az containerapp delete \
-          # --name frontend-app \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR \
-          # --yes
-        # az containerapp delete \
-          # --name backend-app \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR \
-          # --yes          
+      
+    - name: AZ Destroy: Delete Container App
+      if: ${{ github.event.inputs.action == 'destroy' }}    
+      run: |
+        az containerapp delete \
+          --name frontend-app \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes
+        az containerapp delete \
+          --name backend-app \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes          
 
-    # - name: Delete Container App Environment
-      # run: |
-        # az containerapp env delete \
-          # --name demo-cae \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR \
-          # --yes \
-          # --verbose
+    - name: AZ Destroy: Delete Container App Environment
+      if: ${{ github.event.inputs.action == 'destroy' }}        
+      run: |
+        az containerapp env delete \
+          --name demo-cae \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes \
+          --verbose
 
-    # - name: Delete Virtual Network
-      # run: |
-        # az network vnet delete \
-          # --name demo-vnet \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR || true
+    - name: AZ Destroy: Delete Virtual Network
+      if: ${{ github.event.inputs.action == 'destroy' }}        
+      run: |
+        az network vnet delete \
+          --name demo-vnet \
+          --resource-group rg-cicd-terraform-app-logisticaJJR || true
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
-
-         
+        
     - name: Terraform Init
       run: terraform init
 
@@ -75,34 +74,11 @@ jobs:
         terraform apply -auto-approve
         ls -la
         
-    - name: Upload Terraform state (90 days)
+    - name: Save Terraform state file
       if: ${{ github.event.inputs.action == 'apply' }}
       uses: actions/upload-artifact@v4
       with:
         name: terraform-state
         path: ./terraform.tfstate
         
-    # - name: Download Terraform State
-      # if: ${{ github.event.inputs.action == 'destroy' }}
-      # uses: actions/download-artifact@v4
-      # with:
-        # name: terraform-state
-        # path: ./terraform.tfstate  
-      
-    - name: Prepare Terraform state for destroy
-      if: ${{ github.event.inputs.action == 'destroy' }}
-      run: |
-        if [ -z "${{ github.event.inputs.tfstate_file }}" ]; then
-          echo "ERROR: No tfstate file uploaded for destroy"
-          exit 1
-        fi
-        mkdir -p ./terraform
-        cp "${{ github.event.inputs.tfstate_file }}" ./terraform/terraform.tfstate
-        echo "Terraform state prepared:"
-        ls -la ./terraform
-        
-    - name: Terraform Destroy
-      if: ${{ github.event.inputs.action == 'destroy' }}
-      run: |
-        ls -la
-        terraform destroy -state=./terraform.tfstate -auto-approve
+          
