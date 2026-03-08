@@ -37,6 +37,13 @@ jobs:
           --resource-group rg-cicd-terraform-app-logisticaJJR \
           --yes
 
+    - name: Delete Container App Environment
+      run: |
+        az containerapp env delete \
+          --name demo-cae \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes || true
+
     - name: Delete Virtual Network
       run: |
         az network vnet delete \
