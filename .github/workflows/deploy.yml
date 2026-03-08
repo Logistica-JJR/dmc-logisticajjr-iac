@@ -34,41 +34,35 @@ jobs:
     - name: List accessible Resource Groups
       run: az group list --output table
  
-    - name: Delete Container App
-      run: |
-        az containerapp delete \
-          --name frontend-app \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes
-        az containerapp delete \
-          --name backend-app \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes          
+    # - name: Delete Container App
+      # run: |
+        # az containerapp delete \
+          # --name frontend-app \
+          # --resource-group rg-cicd-terraform-app-logisticaJJR \
+          # --yes
+        # az containerapp delete \
+          # --name backend-app \
+          # --resource-group rg-cicd-terraform-app-logisticaJJR \
+          # --yes          
 
-    - name: Delete Container App Environment
-      run: |
-        az containerapp env delete \
-          --name demo-cae \
-          --resource-group rg-cicd-terraform-app-logisticaJJR \
-          --yes \
-          --verbose
+    # - name: Delete Container App Environment
+      # run: |
+        # az containerapp env delete \
+          # --name demo-cae \
+          # --resource-group rg-cicd-terraform-app-logisticaJJR \
+          # --yes \
+          # --verbose
 
-    - name: Delete Virtual Network
-      run: |
-        az network vnet delete \
-          --name demo-vnet \
-          --resource-group rg-cicd-terraform-app-logisticaJJR || true
+    # - name: Delete Virtual Network
+      # run: |
+        # az network vnet delete \
+          # --name demo-vnet \
+          # --resource-group rg-cicd-terraform-app-logisticaJJR || true
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
-    - name: Download Terraform state
-      if: ${{ github.event_name == 'workflow_run' }}
-      uses: actions/download-artifact@v4
-      with:
-        name: terraform-state
-        path: ./
-          
+         
     - name: Terraform Init
       run: terraform init
 
@@ -83,14 +77,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: terraform-state
-        path: ./
+        path: ./terraform.tfstate
         
     - name: Download Terraform State
       if: ${{ github.event.inputs.action == 'destroy' }}
       uses: actions/download-artifact@v4
       with:
         name: terraform-state
-        path: ./  
+        path: ./terraform.tfstate  
       
 
     - name: Terraform Destroy
