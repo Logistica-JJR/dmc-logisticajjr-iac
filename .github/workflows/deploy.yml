@@ -91,12 +91,13 @@ jobs:
       with:
         name: terraform-state
         path: ./  
-      run: |
-        ls -la        
+      
 
     - name: Terraform Destroy
       if: ${{ github.event.inputs.action == 'destroy' }}
-      run: terraform destroy -auto-approve
+      run: |
+        ls -la
+        terraform destroy -auto-approve
 
 
     - name: List files
