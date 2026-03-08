@@ -19,6 +19,14 @@ jobs:
       with:
         creds: ${{ secrets.AzureCredentialPrincipal }}
 
+    - name: Check if secret exists
+      run: |
+        if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
+          echo "Secret NOT available"
+        else
+          echo "Secret available"
+        fi
+    
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
