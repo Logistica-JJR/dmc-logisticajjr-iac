@@ -34,7 +34,7 @@ jobs:
       - name: List accessible Resource Groups
         run: az group list --output table
 
-      - name: AZ Destroy: Delete Container Apps
+      - name: AZ Destroy (Delete Container Apps)
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
           az containerapp delete \
@@ -46,7 +46,7 @@ jobs:
             --resource-group rg-cicd-terraform-app-logisticaJJR \
             --yes
 
-      - name: AZ Destroy: Delete Container App Environment
+      - name: AZ Destroy (Delete Container App Environment)
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
           az containerapp env delete \
@@ -55,7 +55,7 @@ jobs:
             --yes \
             --verbose
 
-      - name: AZ Destroy: Delete Virtual Network
+      - name: AZ Destroy (Delete Virtual )
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
           az network vnet delete \
