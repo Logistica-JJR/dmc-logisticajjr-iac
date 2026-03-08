@@ -15,6 +15,8 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    env:
+      RG_NAME: rg-cicd-terraform-app-logisticaJJR    
     steps:
       - uses: actions/checkout@v3
 
@@ -34,16 +36,21 @@ jobs:
       - name: List accessible Resource Groups
         run: az group list --output table
 
+      - name: List resources in specific RG
+        run: |
+          echo "Listing all resources in Resource Group: $RG_NAME"
+          az resource list --resource-group $RG_NAME --output table
+
       - name: AZ Destroy (Delete Container Apps)
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
           az containerapp delete \
             --name frontend-app \
-            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --resource-group $RG_NAME \
             --yes
           az containerapp delete \
             --name backend-app \
-            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --resource-group $RG_NAME \
             --yes
 
       - name: AZ Destroy (Delete Container App Environment)
@@ -51,7 +58,7 @@ jobs:
         run: |
           az containerapp env delete \
             --name demo-cae \
-            --resource-group rg-cicd-terraform-app-logisticaJJR \
+            --resource-group $RG_NAME \
             --yes \
             --verbose
 
@@ -60,12 +67,14 @@ jobs:
         run: |
           az network vnet delete \
             --name demo-vnet \
-            --resource-group rg-cicd-terraform-app-logisticaJJR || true
+            --resource-group $RG_NAME || true
 
       - name: Setup Terraform
+        if: ${{ github.event.inputs.action == 'apply' }}      
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
+        if: ${{ github.event.inputs.action == 'apply' }}      
         run: terraform init
 
       - name: Terraform Apply
