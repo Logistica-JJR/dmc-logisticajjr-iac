@@ -36,6 +36,10 @@ jobs:
           --name frontend-app \
           --resource-group rg-cicd-terraform-app-logisticaJJR \
           --yes
+        az containerapp delete \
+          --name backend-app \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes          
 
     - name: Delete Container App Environment
       run: |
