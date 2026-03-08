@@ -1,11 +1,11 @@
 variable "rg_name" {
   type    = string
-  default = "demo-rg"
+  default = "rg-cicd-terraform-app-logisticaJJR"
 }
 
 variable "location" {
   type    = string
-  default = "East US"
+  default = "westus2"
 }
 
 variable "cae_name" {
