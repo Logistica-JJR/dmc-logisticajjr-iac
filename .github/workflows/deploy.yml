@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'apply o destroy'
+        description: 'Choose action: apply or destroy'
         required: true
         default: 'apply'
+        type: choice
+        options:
+          - apply
+          - destroy
 
 jobs:
   terraform:
@@ -63,21 +67,37 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: terraform-state
-        path: ./terraform
+        path: ./
           
     - name: Terraform Init
       run: terraform init
 
-    - name: Terraform Apply/Destroy
+    - name: Terraform Apply
+      if: ${{ github.event.inputs.action == 'apply' }}
       run: |
-        if [ "${{ github.event.inputs.action }}" == "apply" ]; then
-          terraform apply -auto-approve
-        else
-          terraform destroy -auto-approve
-        fi
+        terraform apply -auto-approve
+        ls -la
         
-    - name: Upload state (90 days)
+    - name: Upload Terraform state (90 days)
+      if: ${{ github.event.inputs.action == 'apply' }}
       uses: actions/upload-artifact@v4
       with:
         name: terraform-state
-        path: ./terraform/terraform.tfstate        
+        path: ./
+        
+    - name: Download Terraform State
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: terraform-state
+        path: ./  
+      run: |
+        ls -la        
+
+    - name: Terraform Destroy
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      run: terraform destroy -auto-approve
+
+
+    - name: List files
+      run: ls -la        
