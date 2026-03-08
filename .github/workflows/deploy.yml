@@ -14,11 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AzureCredentialPrincipal }}
-
     - name: Check if secret exists
       run: |
         if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
@@ -26,7 +21,12 @@ jobs:
         else
           echo "Secret available"
         fi
-    
+        
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+   
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
