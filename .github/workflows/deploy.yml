@@ -29,7 +29,21 @@ jobs:
 
     - name: List accessible Resource Groups
       run: az group list --output table
-   
+ 
+    - name: Delete Container App
+      run: |
+        az containerapp delete \
+          --name frontend-app \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes
+
+    - name: Delete Virtual Network
+      run: |
+        az network vnet delete \
+          --name demo-vnet \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes
+ 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
