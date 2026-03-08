@@ -25,12 +25,12 @@ variable "frontend_ca" {
 
 variable "backend_image" {
   type    = string
-  default = "yourdockerhubuser/backend:latest"
+  default = "nginx:latest"
 }
 
 variable "frontend_image" {
   type    = string
-  default = "yourdockerhubuser/frontend:latest"
+  default = "nginx:latest"
 }
 
 variable "vnet_name" {
