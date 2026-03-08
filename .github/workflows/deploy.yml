@@ -1,4 +1,4 @@
-name: Terraform Deploy POC
+name: Desplegar infraestructura
 
 on:
   workflow_dispatch:
