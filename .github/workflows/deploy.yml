@@ -30,30 +30,36 @@ jobs:
     - name: List accessible Resource Groups
       run: az group list --output table
  
-    # - name: Delete Container App
-      # run: |
-        # az containerapp delete \
-          # --name frontend-app \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR \
-          # --yes
+    - name: Delete Container App
+      run: |
+        az containerapp delete \
+          --name frontend-app \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes
 
-    # - name: Delete Container App Environment
-      # run: |
-        # az containerapp env delete \
-          # --name demo-cae \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR \
-          # --yes \
-          # --verbose
+    - name: Delete Container App Environment
+      run: |
+        az containerapp env delete \
+          --name demo-cae \
+          --resource-group rg-cicd-terraform-app-logisticaJJR \
+          --yes \
+          --verbose
 
-    # - name: Delete Virtual Network
-      # run: |
-        # az network vnet delete \
-          # --name demo-vnet \
-          # --resource-group rg-cicd-terraform-app-logisticaJJR || true
+    - name: Delete Virtual Network
+      run: |
+        az network vnet delete \
+          --name demo-vnet \
+          --resource-group rg-cicd-terraform-app-logisticaJJR || true
  
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
+    - name: Download previous state
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-state
+        path: ./terraform
+          
     - name: Terraform Init
       run: terraform init
 
@@ -64,3 +70,9 @@ jobs:
         else
           terraform destroy -auto-approve
         fi
+        
+    - name: Upload state (90 days)
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-state
+        path: ./terraform/terraform.tfstate        
