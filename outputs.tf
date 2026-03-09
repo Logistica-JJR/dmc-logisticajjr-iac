@@ -3,7 +3,8 @@ output "resource_group_name" {
 }
 
 output "container_app_environment_id" {
-  value = azurerm_container_app_environment.cae.id
+  # value = azurerm_container_app_environment.cae.id
+  value = data.azurerm_container_app_environment.cae.id
 }
 
 output "backend_container_app_name" {
