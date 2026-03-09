@@ -84,10 +84,14 @@ jobs:
           terraform apply -auto-approve
           ls -la
 
-      - name: Terraform Apply Container App Only
+      - name: Terraform Apply Container App Frontend
         if: ${{ github.event.inputs.action == 'container_app_only' }}
-        run: terraform apply -target=azurerm_container_app -auto-approve
+        run: terraform apply -target=azurerm_container_app.frontend -auto-approve
 
+      - name: Terraform Apply Container App Backend
+        if: ${{ github.event.inputs.action == 'container_app_only' }}
+        run: terraform apply -target=azurerm_container_app.backend -auto-approve
+        
       - name: Save Terraform state file
         if: ${{ github.event.inputs.action == 'apply' }}
         uses: actions/upload-artifact@v4
