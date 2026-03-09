@@ -35,12 +35,12 @@ variable "frontend_image" {
 
 variable "vnet_name" {
   type    = string
-  default = "demo-vnet"
+  default = "app-vnet"
 }
 
-variable "backend_subnet" {
+variable "cae_subnet" {
   type    = string
-  default = "backend-subnet"
+  default = "app-subnet"
 }
 
 variable "frontend_subnet" {

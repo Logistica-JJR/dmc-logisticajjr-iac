@@ -29,41 +29,25 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
 }
 
-resource "azurerm_subnet" "backend" {
-  name                 = var.backend_subnet
+# -------------------------------
+# Subnet compartida para CAE
+# -------------------------------
+resource "azurerm_subnet" "cae_subnet" {
+  name                 = var.cae_subnet
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 
   delegation {
-    name = "ca-backend-delegation"
+    name = "cae-delegation"
 
     service_delegation {
-      name = "Microsoft.App/environments"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action"
-      ]
+      name    = "Microsoft.App/environments"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
   }
 }
 
-resource "azurerm_subnet" "frontend" {
-  name                 = var.frontend_subnet
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-
-  delegation {
-    name = "ca-frontend-delegation"
-
-    service_delegation {
-      name = "Microsoft.App/environments"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action"
-      ]
-    }
-  }
-}
 
 # -------------------------------
 # Container App Environment
@@ -77,6 +61,9 @@ data "azurerm_container_app_environment" "cae" {
   name                = var.cae_name
   resource_group_name = data.azurerm_resource_group.rg.name
   # location            = data.azurerm_resource_group.rg.location
+  vnet_configuration {
+    infrastructure_subnet_id = azurerm_subnet.cae_subnet.id
+  }  
 }
 
 
@@ -109,8 +96,6 @@ resource "azurerm_container_app" "backend" {
       percentage      = 100
     }
   }
-  
-  subnet_ids = [azurerm_subnet.cae_subnet.id]
 }
 
 # -------------------------------
@@ -141,6 +126,4 @@ resource "azurerm_container_app" "frontend" {
       percentage      = 100
     }
   }
-  
-  subnet_ids = [azurerm_subnet.cae_subnet.id]
 }
