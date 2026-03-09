@@ -32,18 +32,3 @@ variable "frontend_image" {
   type    = string
   default = "ricvera792/dmc-logisticajjr-frontend:latest"
 }
-
-variable "vnet_name" {
-  type    = string
-  default = "app-vnet"
-}
-
-variable "cae_subnet" {
-  type    = string
-  default = "app-subnet"
-}
-
-variable "frontend_subnet" {
-  type    = string
-  default = "frontend-subnet"
-}

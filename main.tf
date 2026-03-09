@@ -20,45 +20,12 @@ data "azurerm_resource_group" "rg" {
 }
 
 # -------------------------------
-# Virtual Network
-# -------------------------------
-resource "azurerm_virtual_network" "vnet" {
-  name                = var.vnet_name
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  address_space       = ["10.0.0.0/16"]
-}
-
-# -------------------------------
-# Subnet compartida para CAE
-# -------------------------------
-resource "azurerm_subnet" "cae_subnet" {
-  name                 = var.cae_subnet
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-
-  delegation {
-    name = "cae-delegation"
-
-    service_delegation {
-      name    = "Microsoft.App/environments"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-}
-
-
-# -------------------------------
 # Container App Environment
 # -------------------------------
 resource "azurerm_container_app_environment" "cae" {
   name                = var.cae_name
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  vnet_configuration {
-    infrastructure_subnet_id = azurerm_subnet.cae_subnet.id
-  }  
 }
 # data "azurerm_container_app_environment" "cae" {
   # name                = var.cae_name
@@ -67,7 +34,7 @@ resource "azurerm_container_app_environment" "cae" {
 
 
 # -------------------------------
-# Backend Container App (interno)
+# Backend Container App
 # -------------------------------
 resource "azurerm_container_app" "backend" {
   name                         = var.backend_ca
@@ -86,9 +53,8 @@ resource "azurerm_container_app" "backend" {
   }
 
   ingress {
-    external_enabled = false
+    external_enabled = true
     target_port      = 5000
-	transport        = "http"
 
     traffic_weight {
       latest_revision = true
