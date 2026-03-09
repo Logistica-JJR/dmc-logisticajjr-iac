@@ -25,12 +25,12 @@ variable "frontend_ca" {
 
 variable "backend_image" {
   type    = string
-  default = "nginx:latest"
+  default = "ricvera792/dmc-logisticajjr-backend:latest"
 }
 
 variable "frontend_image" {
   type    = string
-  default = "nginx:latest"
+  default = "ricvera792/dmc-logisticajjr-frontend:latest"
 }
 
 variable "vnet_name" {
