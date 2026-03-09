@@ -33,7 +33,7 @@ resource "azurerm_subnet" "backend" {
   name                 = var.backend_subnet
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["10.0.3.0/24"]
 
   delegation {
     name = "ca-backend-delegation"
@@ -51,7 +51,7 @@ resource "azurerm_subnet" "frontend" {
   name                 = var.frontend_subnet
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["10.0.3.0/24"]
 
   delegation {
     name = "ca-frontend-delegation"
