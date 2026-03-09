@@ -84,13 +84,17 @@ jobs:
           terraform apply -auto-approve
           ls -la
 
-      - name: Terraform Apply Container App Frontend
+      - name: Terraform Apply Container App (Frontend y Backend)
         if: ${{ github.event.inputs.action == 'container_app_only' }}
-        run: terraform apply -target=azurerm_container_app.frontend -auto-approve
-
-      - name: Terraform Apply Container App Backend
-        if: ${{ github.event.inputs.action == 'container_app_only' }}
-        run: terraform apply -target=azurerm_container_app.backend -auto-approve
+        run: | 
+          terraform import azurerm_container_app_environment.demo_cae \
+          /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/rg-cicd-terraform-app-logisticaJJR/providers/Microsoft.App/managedEnvironments/demo-cae
+          terraform import azurerm_container_app.backend \
+          /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/rg-cicd-terraform-app-logisticaJJR/providers/Microsoft.App/containerApps/backend-app
+          terraform import azurerm_container_app.frontend \
+          /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/rg-cicd-terraform-app-logisticaJJR/providers/Microsoft.App/containerApps/frontend-app
+          terraform apply -target=azurerm_container_app.frontend -auto-approve
+          terraform apply -target=azurerm_container_app.backend -auto-approve
         
       - name: Save Terraform state file
         if: ${{ github.event.inputs.action == 'apply' }}
