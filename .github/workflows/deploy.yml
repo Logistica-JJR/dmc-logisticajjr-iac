@@ -62,7 +62,7 @@ jobs:
             --yes \
             --verbose
 
-      - name: AZ Destroy (Delete Virtual )
+      - name: AZ Destroy (Delete Virtual Network)
         if: ${{ github.event.inputs.action == 'destroy' }}
         run: |
           az network vnet delete \
