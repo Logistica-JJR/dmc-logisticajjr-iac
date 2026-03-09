@@ -52,19 +52,18 @@ resource "azurerm_subnet" "cae_subnet" {
 # -------------------------------
 # Container App Environment
 # -------------------------------
-# resource "azurerm_container_app_environment" "cae" {
-  # name                = var.cae_name
-  # resource_group_name = data.azurerm_resource_group.rg.name
-  # location            = data.azurerm_resource_group.rg.location
-# }
-data "azurerm_container_app_environment" "cae" {
+resource "azurerm_container_app_environment" "cae" {
   name                = var.cae_name
   resource_group_name = data.azurerm_resource_group.rg.name
-  # location            = data.azurerm_resource_group.rg.location
+  location            = data.azurerm_resource_group.rg.location
   vnet_configuration {
     infrastructure_subnet_id = azurerm_subnet.cae_subnet.id
   }  
 }
+# data "azurerm_container_app_environment" "cae" {
+  # name                = var.cae_name
+  # resource_group_name = data.azurerm_resource_group.rg.name
+# }
 
 
 # -------------------------------
@@ -73,8 +72,8 @@ data "azurerm_container_app_environment" "cae" {
 resource "azurerm_container_app" "backend" {
   name                         = var.backend_ca
   resource_group_name          = data.azurerm_resource_group.rg.name
-  # container_app_environment_id = azurerm_container_app_environment.cae.id
-  container_app_environment_id = data.azurerm_container_app_environment.cae.id
+  container_app_environment_id = azurerm_container_app_environment.cae.id
+  # container_app_environment_id = data.azurerm_container_app_environment.cae.id
   revision_mode                = "Single"
 
   template {
@@ -104,8 +103,8 @@ resource "azurerm_container_app" "backend" {
 resource "azurerm_container_app" "frontend" {
   name                         = var.frontend_ca
   resource_group_name          = data.azurerm_resource_group.rg.name
-  # container_app_environment_id = azurerm_container_app_environment.cae.id
-  container_app_environment_id = data.azurerm_container_app_environment.cae.id
+  container_app_environment_id = azurerm_container_app_environment.cae.id
+  # container_app_environment_id = data.azurerm_container_app_environment.cae.id
   revision_mode                = "Single"
 
   template {

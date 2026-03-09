@@ -53,14 +53,14 @@ jobs:
             --resource-group $RG_NAME \
             --yes
 
-      # - name: AZ Destroy (Delete Container App Environment)
-        # if: ${{ github.event.inputs.action == 'destroy' }}
-        # run: |
-          # az containerapp env delete \
-            # --name demo-cae \
-            # --resource-group $RG_NAME \
-            # --yes \
-            # --verbose
+      - name: AZ Destroy (Delete Container App Environment)
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          az containerapp env delete \
+            --name demo-cae \
+            --resource-group $RG_NAME \
+            --yes \
+            --verbose
 
       - name: AZ Destroy (Delete Virtual )
         if: ${{ github.event.inputs.action == 'destroy' }}
