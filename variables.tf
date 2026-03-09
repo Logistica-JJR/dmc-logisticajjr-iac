@@ -10,17 +10,17 @@ variable "location" {
 
 variable "cae_name" {
   type    = string
-  default = "cae-logisticaJJR"
+  default = "cae-ljjr"
 }
 
 variable "backend_ca" {
   type    = string
-  default = "ca-backend-logisticaJJR"
+  default = "ca-be-ljjr"
 }
 
 variable "frontend_ca" {
   type    = string
-  default = "ca-frontend-logisticaJJR"
+  default = "ca-fe-ljjr"
 }
 
 variable "backend_image" {
