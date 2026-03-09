@@ -76,7 +76,7 @@ resource "azurerm_subnet" "frontend" {
 data "azurerm_container_app_environment" "cae" {
   name                = var.cae_name
   resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  # location            = data.azurerm_resource_group.rg.location
 }
 
 
