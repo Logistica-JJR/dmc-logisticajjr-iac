@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Seleccionar: Terraform apply o AZ destroy'
+        description: 'Terraform apply, AZ destroy o UpgradeContainerApps'
         required: true
         default: 'apply'
         type: choice
         options:
           - apply
           - destroy
+          - container_app_only
 
 jobs:
   terraform:
@@ -82,6 +83,10 @@ jobs:
         run: |
           terraform apply -auto-approve
           ls -la
+
+      - name: Terraform Apply Container App Only
+        if: ${{ github.event.inputs.target == 'container_app_only' }}
+        run: terraform apply -target=azurerm_container_app -auto-approve
 
       - name: Save Terraform state file
         if: ${{ github.event.inputs.action == 'apply' }}
