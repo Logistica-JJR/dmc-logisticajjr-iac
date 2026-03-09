@@ -71,11 +71,11 @@ jobs:
             --resource-group $RG_NAME || true
 
       - name: Setup Terraform
-        if: ${{ github.event.inputs.action == 'apply' }}      
+        if: ${{ github.event.inputs.action == 'apply' || github.event.inputs.action == 'container_app_only' }}      
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
-        if: ${{ github.event.inputs.action == 'apply' }}      
+        if: ${{ github.event.inputs.action == 'apply' || github.event.inputs.action == 'container_app_only' }}      
         run: terraform init
 
       - name: Terraform Apply
@@ -85,7 +85,7 @@ jobs:
           ls -la
 
       - name: Terraform Apply Container App Only
-        if: ${{ github.event.inputs.target == 'container_app_only' }}
+        if: ${{ github.event.inputs.action == 'container_app_only' }}
         run: terraform apply -target=azurerm_container_app -auto-approve
 
       - name: Save Terraform state file
