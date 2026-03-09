@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Terraform apply, AZ destroy o UpgradeContainerApps'
+        description: '¿Terraform apply o AZ destroy?'
         required: true
         default: 'apply'
         type: choice
         options:
           - apply
           - destroy
-          - container_app_only
 
 jobs:
   terraform:
@@ -83,24 +82,6 @@ jobs:
         run: |
           terraform apply -auto-approve
           ls -la
-
-      - name: Terraform Apply Container App (Frontend y Backend)
-        if: ${{ github.event.inputs.action == 'container_app_only' }}
-        run: | 
-          # Importar Container App Environment
-          terraform import azurerm_container_app_environment.demo_cae \
-            /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/$RG_NAME/providers/Microsoft.App/managedEnvironments/demo-cae
-
-          # Importar Container App Frontend
-          terraform import azurerm_container_app.frontend_app \
-            /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/$RG_NAME/providers/Microsoft.App/containerApps/frontend-app
-
-          # Importar Container App Backend (si existe)
-          terraform import azurerm_container_app.backend_app \
-            /subscriptions/69633081-5735-434d-8ccd-9c14b4016ad1/resourceGroups/$RG_NAME/providers/Microsoft.App/containerApps/backend-app
-            
-          terraform apply -target=azurerm_container_app.frontend -auto-approve
-          terraform apply -target=azurerm_container_app.backend -auto-approve
         
       - name: Save Terraform state file
         if: ${{ github.event.inputs.action == 'apply' }}
